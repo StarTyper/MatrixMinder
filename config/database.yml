@@ -12,6 +12,7 @@
 # Configure Using Gemfile
 # gem "pg"
 #
+
 default: &default
   adapter: postgresql
   encoding: unicode
@@ -19,9 +20,21 @@ default: &default
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
+
 development:
-  <<: *default
-  database: matrix_minder_development
+  primary: &primary_development
+    <<: *default
+    database: matrix_minder_development
+    username: <%= ENV["MATRIX_MINDER_DATABASE_USERNAME"] %>
+    password: <%= ENV["MATRIX_MINDER_DATABASE_PASSWORD"] %>
+  queue:
+    <<: *primary_development
+    database: matrix_minder_development_queue
+    migrations_paths: db/queue_migrate
+
+# development:
+#   <<: *default
+#   database: matrix_minder_development
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.
@@ -77,8 +90,20 @@ test:
 # Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
 # for a full overview on how database connection configuration can be specified.
 #
+
 production:
-  <<: *default
-  database: matrix_minder_production
-  username: matrix_minder
-  password: <%= ENV["MATRIX_MINDER_DATABASE_PASSWORD"] %>
+  primary: &primary_production
+    <<: *default
+    database: matrix_minder_production
+    username: matrix_minder
+    password: <%= ENV["MATRIX_MINDER_DATABASE_PASSWORD"] %>
+  queue:
+    <<: *primary_production
+    database: matrix_minder_production_queue
+    migrations_paths: db/queue_migrate
+
+# production:
+#   <<: *default
+#   database: matrix_minder_production
+#   username: matrix_minder
+#   password: <%= ENV["MATRIX_MINDER_DATABASE_PASSWORD"] %>
